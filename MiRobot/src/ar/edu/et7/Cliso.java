@@ -28,9 +28,9 @@ public class Cliso extends AdvancedRobot {
 
 		setBodyColor(Color.BLACK);
 
-		setGunColor(Color.RED);
+		setGunColor(Color.BLACK);
 
-		setRadarColor(Color.YELLOW);
+		setRadarColor(Color.WHITE);
 
 
 
@@ -54,7 +54,7 @@ public class Cliso extends AdvancedRobot {
 
 			execute();
 
-			setBack(100);
+			setBack(105);
 
 			setTurnLeft(45); 
 
@@ -76,50 +76,40 @@ public class Cliso extends AdvancedRobot {
 
 	public void onScannedRobot(ScannedRobotEvent event) {
 
-		double distance = event.getDistance();
-
-
-
 		// Apunta al robot escaneado
+	    double absoluteBearing = getHeading() + event.getBearing();
+	    double bearingFromGun = normalRelativeAngleDegrees(absoluteBearing - getGunHeading());
 
-		double absoluteBearing = getHeading() + event.getBearing();
+	    // Calcula el ángulo de tiro necesario para acertar al objetivo
+	    double firingAngle = calculateFiringAngle(event);
 
-		double bearingFromGun = normalRelativeAngleDegrees(absoluteBearing - getGunHeading());
+	    // Ajusta el cañón para apuntar al ángulo de tiro calculado
+	    turnGunRight(bearingFromGun + firingAngle);
 
+	    // Dispara con la potencia máxima
+	    fire(Rules.MAX_BULLET_POWER);
 
+	    // Ajusta el radar para seguir al objetivo
+	    adjustRadarForTarget(event);
 
-		// Si el cañón está cerca del objetivo, dispara
-
-		turnGunRight(bearingFromGun);
-
-		if (distance < 100) {
-
-			fire(Rules.MAX_BULLET_POWER);
-
-		} else if (distance < 200) {
-
-			fire(Rules.MAX_BULLET_POWER * 0.75);
-
-		} else {
-
-			fire(Rules.MAX_BULLET_POWER * 0.5);
-
-		}
+	}
 
 
 
-		// Ajusta el radar para seguir al objetivo
+	private double calculateFiringAngle(ScannedRobotEvent event) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-		if (distance < 200) {
 
-			setTurnRadarRight(getHeading() - getRadarHeading() + event.getBearing());
 
-		} else {
-
-			setTurnRadarRight(360);
-
-		}
-
+	private void adjustRadarForTarget(ScannedRobotEvent event) {
+	    double distance = event.getDistance();
+	    if (distance < 200) {
+	        setTurnRadarRight(getHeading() - getRadarHeading() + event.getBearing());
+	    } else {
+	        setTurnRadarRight(360);
+	    }
 	}
 
 
@@ -128,9 +118,9 @@ public class Cliso extends AdvancedRobot {
 
 		// Movimiento evasivo al ser golpeado
 
-		setBack(50);
+		setBack(70);
 
-		setTurnRight(45);
+		setTurnRight(65);
 
 		execute();
 
@@ -152,13 +142,13 @@ public class Cliso extends AdvancedRobot {
 
 
 
-	public void onBulletHit(BulletHitEvent event) {
+/*	public void onBulletHit(BulletHitEvent event) {
 
 		// Al acertar un disparo, imprime el nombre del robot impactado
 
 		out.println("Le acerté un disparo a " + event.getName() + "!");
 
-	}
+	}*/
 
 
 
